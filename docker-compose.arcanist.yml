@@ -1,15 +1,9 @@
 x-chatwoot-build: &chatwoot-build
   context: .
-  dockerfile: ./docker/Dockerfile
-  args:
-    BUNDLE_WITHOUT: ""
-    EXECJS_RUNTIME: "Node"
-    RAILS_ENV: "development"
-    RAILS_SERVE_STATIC_FILES: "false"
+  dockerfile: ./docker/arcanist.Dockerfile
 
 x-chatwoot-volumes: &chatwoot-volumes
   - ./:/app:delegated
-  - bundle:/gems
   - node_modules:/app/node_modules
   - packs:/app/public/packs
   - cache:/app/tmp/cache
@@ -103,7 +97,6 @@ services:
     restart: unless-stopped
 
 volumes:
-  bundle:
   cache:
   node_modules:
   packs:
