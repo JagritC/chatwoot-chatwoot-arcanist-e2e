@@ -1,0 +1,43 @@
+{
+  "appRuntime": {
+    "kind": "web",
+    "runner": "docker",
+    "entry": {
+      "type": "compose",
+      "files": ["docker-compose.arcanist.yml"],
+      "service": "web"
+    },
+    "url": {
+      "hostPort": 3000,
+      "path": "/"
+    },
+    "ready": {
+      "path": "/",
+      "timeoutSeconds": 900
+    },
+    "open": {
+      "path": "/app/accounts/1/contacts"
+    },
+    "composeEnv": {
+      "ACTIVE_STORAGE_SERVICE": "local",
+      "ENABLE_ACCOUNT_SIGNUP": "true",
+      "FORCE_SSL": "false",
+      "FRONTEND_URL": "http://127.0.0.1:3000",
+      "INSTALLATION_ENV": "docker",
+      "LOG_LEVEL": "info",
+      "MAILER_SENDER_EMAIL": "Chatwoot <accounts@chatwoot.com>",
+      "NODE_ENV": "development",
+      "POSTGRES_DATABASE": "chatwoot",
+      "POSTGRES_HOST": "postgres",
+      "POSTGRES_PASSWORD": "postgres",
+      "POSTGRES_USERNAME": "postgres",
+      "RAILS_ENV": "development",
+      "RAILS_LOG_TO_STDOUT": "true",
+      "REDIS_PASSWORD": "redis",
+      "REDIS_URL": "redis://:redis@redis:6379",
+      "SECRET_KEY_BASE": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "SMTP_ADDRESS": "mailhog",
+      "SMTP_PORT": "1025"
+    }
+  }
+}
