@@ -1,0 +1,59 @@
+services:
+  web:
+    volumes:
+      - bundle:/gems
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      vite:
+        condition: service_started
+      mailhog:
+        condition: service_started
+    healthcheck:
+      test: >-
+        ruby -rnet/http -e 'exit(Net::HTTP.get_response(URI("http://127.0.0.1:3000/health")).is_a?(Net::HTTPSuccess) ? 0 : 1)'
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  vite:
+    entrypoint:
+      - .arcanist/vite-start.sh
+    command:
+      - bin/vite
+      - dev
+    volumes:
+      - bundle:/gems
+    environment:
+      HUSKY: "0"
+    healthcheck:
+      test: >-
+        node -e 'require("http").get("http://127.0.0.1:3036", res => process.exit(res.statusCode < 500 ? 0 : 1)).on("error", () => process.exit(1))'
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
+
+  postgres:
+    healthcheck:
+      test: >-
+        pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  redis:
+    healthcheck:
+      test: >-
+        redis-cli -a "$${REDIS_PASSWORD}" ping | grep PONG
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+volumes:
+  bundle:

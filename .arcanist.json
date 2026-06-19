@@ -4,20 +4,26 @@
     "runner": "docker",
     "entry": {
       "type": "compose",
-      "files": ["docker-compose.arcanist.yml"],
+      "files": [
+        "docker-compose.arcanist.yml",
+        ".arcanist/docker-compose.override.yml"
+      ],
       "service": "web"
     },
     "url": {
       "hostPort": 3000,
       "path": "/"
     },
-    "ready": {
-      "path": "/",
-      "timeoutSeconds": 900
+    "portMapping": {
+      "containerPort": 3000
     },
-    "open": {
-      "path": "/app/accounts/1/contacts"
-    },
+    "additionalPorts": [
+      {
+        "service": "vite",
+        "hostPort": 3036,
+        "containerPort": 3036
+      }
+    ],
     "composeEnv": {
       "ACTIVE_STORAGE_SERVICE": "local",
       "ENABLE_ACCOUNT_SIGNUP": "true",
@@ -30,6 +36,7 @@
       "POSTGRES_DATABASE": "chatwoot",
       "POSTGRES_HOST": "postgres",
       "POSTGRES_PASSWORD": "postgres",
+      "POSTGRES_PORT": "5432",
       "POSTGRES_USERNAME": "postgres",
       "RAILS_ENV": "development",
       "RAILS_LOG_TO_STDOUT": "true",
@@ -38,6 +45,38 @@
       "SECRET_KEY_BASE": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
       "SMTP_ADDRESS": "mailhog",
       "SMTP_PORT": "1025"
+    },
+    "ready": {
+      "path": "/health",
+      "timeoutSeconds": 90
+    },
+    "open": {
+      "path": "/app/login"
+    },
+    "auth": {
+      "command": ".arcanist/auth.sh",
+      "validatePath": "/app"
     }
+  },
+  "verify": {
+    "test": {
+      "command": ".arcanist/verify/runtime-smoke.sh",
+      "rules": [
+        {
+          "name": "arcanist-runtime-smoke",
+          "paths": [
+            ".arcanist/**",
+            ".arcanist.json",
+            "ARCANIST.md",
+            "docker-compose.arcanist.yml"
+          ],
+          "command": ".arcanist/verify/runtime-smoke.sh"
+        }
+      ],
+      "timeoutSeconds": 900
+    }
+  },
+  "pr": {
+    "templatePath": ".arcanist/pr-template.md"
   }
 }
